@@ -1,0 +1,90 @@
+import math
+import argparse
+
+def check(list_):
+    a = list_
+    for i in list_:
+        if i == "diff" or "annuity":
+            pass
+        elif float(i) < 0:
+            return False
+
+
+def monthly_payment(loan_p, monthly_p, loan_i):
+    i = loan_i / (12 * 100)
+    a = monthly_p / (monthly_p - i * loan_p)
+    n = math.log(a, 1 + i)
+    number_months = math.ceil(n)
+    a = number_months // 12
+    b = number_months % 12
+    if b == 0:
+        print("It will take {} years to repay this loan!".format(a))
+    else:
+        print("It will take {} years and {} months to repay this loan!".format(a, b))
+    print("Overpayment = {}".format(math.ceil((monthly_p * number_months) - loan_p)))
+
+
+def annuity_payment(loan_p, number_of_p, loan_i):
+    i = (loan_i / 100) / 12
+    A = loan_p * ((i * (1 + i) ** number_of_p) / ((1 + i) ** number_of_p - 1))
+    print("Your annuity payment = {}".format(math.ceil(A)))
+    print("Overpayment = {}".format(math.ceil((math.ceil(A) * number_of_p) - loan_p)))
+
+
+def loan_principal(annuity_p, number_of_p, loan_i):
+    i = (loan_i / 100) / 12
+    P = annuity_p / ((i * (1 + i) ** number_of_p) / ((1 + i) ** number_of_p - 1))
+    print("Your loan principal = {}!".format(round(P)))
+    print("Overpayment = {}".format(math.ceil((annuity_p * number_of_p) - P)))
+    return P
+
+msg_0 = "Incorrect parameters"
+
+sum_payment = 0
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument("-type", "--type_1")
+parser.add_argument("-principal", "--principal_1")
+parser.add_argument("-interest", "--interest_1")
+parser.add_argument("-payment", "--payment_1")
+parser.add_argument("-periods", "--periods_1")
+
+args = parser.parse_args()
+
+list_ = [args.type_1, args.principal_1, args.payment_1, args.periods_1, args.interest_1]
+
+type_ = args.type_1
+principal = args.principal_1
+payment = args.payment_1
+periods = args.periods_1
+interest = args.interest_1
+
+
+if list_[0] == "diff":
+    if list_[3] is None:
+        print(msg_0)
+    elif list_[4] is None:
+        print(msg_0)
+    elif len(list_) < 4:
+        print(msg_0)
+    elif check(list_) is False:
+        print(msg_0)
+    else:
+        for i in range(int(periods)):
+            D_m = (float(principal) / float(periods)) + (float(interest) / (12 * 100)) * (float(principal) - ((float(principal) * (i + 1 - 1)) / (float(periods))))
+            print("Month {}: payment is {}".format(i + 1, math.ceil(D_m)))
+            sum_payment += math.ceil(D_m)
+        print()
+        print("Overpayment = {}".format(sum_payment - int(principal)))
+elif list_[0] == "annuity":
+    if list_[4] is None:
+        print(msg_0)
+    elif list_[1] is None:
+        loan_principal(float(payment), float(periods), float(interest))
+    elif list_[3] is None:
+        monthly_payment(float(principal), float(payment), float(interest))
+    elif list_[2] is None:
+        annuity_payment(float(principal), float(periods), float(interest))
+else:
+    print(msg_0)
