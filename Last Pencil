@@ -1,0 +1,72 @@
+import random
+
+players = []
+
+msg_0 = "The number of pencils should be numeric"
+msg_1 = "The number of pencils should be positive"
+msg_2 = "Choose between John and Jack"
+msg_3 = "Possible values: '1', '2' or '3'"
+msg_4 = "Too many pencils were taken"
+
+
+print("How many pencils would you like to use:")
+while True:
+    number_pen = input()
+    if number_pen.isdigit() is True:
+        if int(number_pen) > 0:
+            pencils = "|" * int(number_pen)
+            print("Who will be the first (John, Jack):")
+            while True:
+                first_p = input()
+                if first_p in ["John", "Jack"]:
+                    if first_p == "John":
+                        players.append("Jack")
+                        players.append("John")
+                    else:
+                        players.append("John")
+                        players.append("Jack")
+                    while len(pencils) != 0:
+                        players.reverse()
+                        print(pencils)
+                        if players[0] == "Jack":
+                            print("{} turn!".format(players[0]))
+                            if len(pencils) == 1:
+                                answer = 1
+                                pencils = "|" * (len(pencils) - answer)
+                            elif len(pencils) in range(4, 1000, 4):
+                                answer = 3
+                                pencils = "|" * (len(pencils) - answer)
+                            elif len(pencils) in range(3, 1000, 4):
+                                answer = 2
+                                pencils = "|" * (len(pencils) - answer)
+                            elif len(pencils) in range(2, 1000, 4):
+                                answer = 1
+                                pencils = "|" * (len(pencils) - 1)
+                            else:
+                                answer = random.randrange(1, 4)
+                                pencils = "|" * (len(pencils) - answer)
+                            print(answer)
+                        else:
+                            while True:
+                                print("{} turn:".format(players[0]))
+                                answer = input()
+                                if answer.isdigit() is True:
+                                    answer = int(answer)
+                                    if answer > 3 or answer == 0:
+                                        print(msg_3)
+                                    elif answer > len(pencils):
+                                        print(msg_4)
+                                    else:
+                                        pencils = "|" * (len(pencils) - answer)
+                                        break
+                                else:
+                                    print(msg_3)
+                    print("{} won!".format(players[1]))
+                    break
+                else:
+                    print(msg_2)
+            break
+        else:
+            print(msg_1)
+    else:
+        print(msg_0)
