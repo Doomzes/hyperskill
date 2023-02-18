@@ -1,0 +1,87 @@
+# write your code here
+
+def check():
+    global list_
+    global wins_x
+    global wins_y
+    if ("X" in list_[0] and "X" in list_[1] and "X" in list_[2]) is True:
+        wins_x = 1
+    if ("O" in list_[0] and "O" in list_[1] and "O" in list_[2]) is True:
+        wins_y = 1
+    if ("X" in list_[1] and "X" in list_[4] and "X" in list_[7]) is True:
+        wins_x = 1
+    if ("O" in list_[1] and "O" in list_[4] and "O" in list_[7]) is True:
+        wins_y = 1
+    if ("X" in list_[0] and "X" in list_[4] and "X" in list_[8]) is True:
+        wins_x = 1
+    if ("O" in list_[0] and "O" in list_[4] and "O" in list_[8]) is True:
+        wins_y = 1
+    if ("X" in list_[0] and "X" in list_[3] and "X" in list_[6]) is True:
+        wins_x = 1
+    if ("O" in list_[0] and "O" in list_[3] and "O" in list_[6]) is True:
+        wins_y = 1
+    if ("X" in list_[2] and "X" in list_[5] and "X" in list_[8]) is True:
+        wins_x = 1
+    if ("O" in list_[2] and "O" in list_[5] and "O" in list_[8]) is True:
+        wins_y = 1
+    if ("X" in list_[2] and "X" in list_[4] and "X" in list_[6]) is True:
+        wins_x = 1
+    if ("O" in list_[2] and "O" in list_[4] and "O" in list_[6]) is True:
+        wins_y = 1
+
+
+
+list_ = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
+wins_x = 0
+wins_y = 0
+s = 0
+dict_number = {"1 1": "0",
+               "1 2": "1",
+               "1 3": "2",
+               "2 1": "3",
+               "2 2": "4",
+               "2 3": "5",
+               "3 1": "6",
+               "3 2": "7",
+               "3 3": "8",
+}
+
+players = ["X", "O"]
+
+print("---------")
+print("| {} {} {} |".format(list_[0], list_[1], list_[2]))
+print("| {} {} {} |".format(list_[3], list_[4], list_[5]))
+print("| {} {} {} |".format(list_[6], list_[7], list_[8]))
+print("---------")
+
+while s < 9:
+    answer = input()
+    a = answer.split()
+    if a[0].isdigit() and a[1].isdigit() is True:
+        if (1 <= int(a[0]) <= 3) and (1 <= int(a[1]) <= 3):
+            b = dict_number["{}".format(answer)]
+            if list_[int(b)] in ["O", "X"]:
+                print("This cell is occupied! Choose another one!")
+            elif list_[int(b)] == " ":
+                list_[int(b)] = "{}".format(players[0])
+                print("---------")
+                print("| {} {} {} |".format(list_[0], list_[1], list_[2]))
+                print("| {} {} {} |".format(list_[3], list_[4], list_[5]))
+                print("| {} {} {} |".format(list_[6], list_[7], list_[8]))
+                print("---------")
+                players.reverse()
+                check()
+                if wins_x == 1 or wins_y == 1:
+                    if wins_x == 1:
+                        print("X wins")
+                    elif wins_y == 1:
+                        print("O wins")
+                    break
+                s += 1
+        else:
+            print("Coordinates should be from 1 to 3!")
+    else:
+        print("You should enter numbers!")
+
+if wins_x == 0 and wins_y == 0:
+    print("Draw")
