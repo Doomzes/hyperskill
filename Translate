@@ -1,0 +1,164 @@
+import sys
+
+import requests
+from bs4 import BeautifulSoup
+import argparse
+
+
+
+def check_language(list_l):
+    global i
+    for l in list_l:
+        if l == "all":
+            pass
+        elif  l.title() not in language_list:
+            print("Sorry, the program doesn't support {}".format(l))
+            i = 1
+            break
+        else:
+            pass
+
+def check_connect(page):
+    global i
+    if page.status_code != 200:
+        print("Something wrong with your internet connection")
+        sys.exit()
+
+
+def check_word():
+    global i
+    span_no_results = soap.find('span', {"class": "wide-container message"})
+    if "not found in Context" in span_no_results.text:
+        print("Sorry, unable to find {}".format(word))
+        sys.exit()
+
+
+parser = argparse.ArgumentParser()
+translate_list = []
+text_list_1 = []
+i = 0
+headers = {'User-Agent': 'Mozilla/5.0'}
+language_list = ["Arabic", "German", "English", "Spanish", "French", "Hebrew", "Japanese", "Dutch", "Polish", "Portuguese", "Romanian", "Russian", "Turkish", "all"]
+language_dict = {"0": "Arabic",
+                 "1": "German",
+                 "2": "English",
+                 "3": "Spanish",
+                 "4": "French",
+                 "5": "Hebrew",
+                 "6": "Japanese",
+                 "7": "Dutch",
+                 "8": "Polish",
+                 "9": "Portuguese",
+                 "10": "Romanian",
+                 "11": "Russian",
+                 "12": "Turkish"}
+
+parser.add_argument("language_1")
+parser.add_argument("language_2")
+parser.add_argument("word")
+
+args = parser.parse_args()
+
+list_ = [args.language_1, args.language_2, args.word]
+
+language_1 = list_[0]
+language_2 = list_[1]
+word = list_[2]
+
+check_language(list_[:2])
+
+while i != 1:
+    if language_2 == "all":
+        for i in range(len(language_dict)):
+            span_word = []
+            span_sug = []
+            translate_list = []
+            text_list_1 = []
+            if language_1.lower() != str(language_dict['{}'.format(i)]).lower():
+                first_language = language_1
+                second_language = language_dict['{}'.format(i)]
+
+                url = "https://context.reverso.net/translation/{}-{}/{}".format(first_language.lower(),
+                                                                                second_language.lower(), word)
+
+                page = requests.get(url, headers=headers)
+                soap = BeautifulSoup(page.content, 'html.parser')
+
+                span_word = soap.find('span', {'class': 'display-term'})
+                span_sug = soap.find('div', {'class': 'example'})
+                check_word()
+                check_connect(page)
+
+                translate_list.append(span_word.text)
+
+                a = str(span_sug.text).split('\n')
+                b = a[3]
+                c = a[8]
+                b = b[10:]
+                c = c[10:]
+                text_list_1.append(b)
+                text_list_1.append(c)
+
+                file = open("{}.txt".format(word), "a", encoding="utf=8")
+                file.write("{} Translations".format(second_language.title()) + "\n")
+
+                for h in translate_list[:5]:
+                    file.write(h + "\n")
+
+                file.write("\n")
+                file.write("{} Example".format(second_language.title()))
+                file.write("\n")
+
+                for d in range(2):
+                    file.write(text_list_1[d] + "\n")
+                    if d % 2 != 0:
+                        file.write("\n")
+                    else:
+                        pass
+                file.close()
+            else:
+                pass
+    else:
+        url = "https://context.reverso.net/translation/{}-{}/{}".format(language_1.lower(), language_2.lower(), word)
+
+        page = requests.get(url, headers=headers)
+        soap = BeautifulSoup(page.content, 'html.parser')
+        span_word = soap.find_all('span', {'class': 'display-term'})
+        span_sug = soap.find_all('div', {'class': 'example'})
+        check_word()
+        check_connect(page)
+        for p in span_word:
+            translate_list.append(p.text)
+
+        for s in span_sug:
+            a = str(s.text).split('\n')
+            b = a[3]
+            c = a[8]
+            b = b[10:]
+            c = c[10:]
+            text_list_1.append(b)
+            text_list_1.append(c)
+
+        file = open("{}.txt".format(word), "w", encoding="utf=8")
+        file.write("{} Translations".format(language_2.title()) + "\n")
+
+        for i in translate_list[:5]:
+            file.write(i + "\n")
+
+        file.write("\n")
+        file.write("{} Example".format(language_2.title()))
+        file.write("\n")
+        for d in range(10):
+            file.write(text_list_1[d] + "\n")
+            if d % 2 != 0:
+                file.write("\n")
+            else:
+                pass
+        file.close()
+
+    file = open("{}.txt".format(word), "r", encoding="utf=8")
+    a = file.read()
+    print("")
+    print(a)
+    file.close()
+    break
